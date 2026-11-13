@@ -70,18 +70,32 @@ def seed_db():
 
         today = date.today()
 
-        def day(d):
-            return date(today.year, today.month, min(d, today.day)).isoformat()
+        entries = [
+            (42.50, "Food", "Weekly groceries"),
+            (18.00, "Transport", "Metro card top-up"),
+            (120.00, "Bills", "Electricity bill"),
+            (35.75, "Health", "Pharmacy"),
+            (24.99, "Entertainment", "Movie night"),
+            (89.90, "Shopping", "New running shoes"),
+            (15.00, "Other", "Gift card"),
+            (27.40, "Food", "Dinner out"),
+        ]
 
+        # Spread evenly from the 1st of the month up to today, so dates stay
+        # in the current month and are never in the future.
+        last = len(entries) - 1
         samples = [
-            (42.50, "Food", day(1), "Weekly groceries"),
-            (18.00, "Transport", day(2), "Metro card top-up"),
-            (120.00, "Bills", day(4), "Electricity bill"),
-            (35.75, "Health", day(7), "Pharmacy"),
-            (24.99, "Entertainment", day(10), "Movie night"),
-            (89.90, "Shopping", day(14), "New running shoes"),
-            (15.00, "Other", day(18), "Gift card"),
-            (27.40, "Food", day(22), "Dinner out"),
+            (
+                amount,
+                category,
+                date(
+                    today.year,
+                    today.month,
+                    1 + round(i * (today.day - 1) / last),
+                ).isoformat(),
+                description,
+            )
+            for i, (amount, category, description) in enumerate(entries)
         ]
 
         with conn:
